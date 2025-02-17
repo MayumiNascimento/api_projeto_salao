@@ -6,6 +6,7 @@ const cors = require("cors");
 const authRoutes = require('./routes/authRoutes');
 const funcionarioRoutes = require('./routes/funcionarioRoutes');
 const servicoRoutes = require('./routes/servicoRoutes');
+const agendamentoRoutes = require('./routes/agendamentoRoutes');
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,8 @@ app.use('/auth', authRoutes);
 app.use('/api', funcionarioRoutes);
 // Rotas de serviços
 app.use('/api', servicoRoutes);
+// Rotas de agendamentos
+app.use('/api', agendamentoRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
