@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Funcionario = require('../models/Funcionario');
 
+//excluir após o cadastro do primeiro registro
 const register = async (req, res) => {
     const { nome, email, senha, especialidade, tipo, comissao } = req.body;
 
@@ -92,4 +93,4 @@ const login = async (req, res) => {
     // }
 };
 
-module.exports = { register, login };
+module.exports = { login, register };

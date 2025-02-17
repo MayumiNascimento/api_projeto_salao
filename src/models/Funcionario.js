@@ -30,6 +30,9 @@ const Funcionario = sequelize.define('Funcionario', {
     comissao: {
         type: DataTypes.FLOAT,
         allowNull: false,
+        validate: {
+            min: 0, // Comissão não pode ser negativa
+        },
     },
 }, {
     tableName: 'funcionarios',

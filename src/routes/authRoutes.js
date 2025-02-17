@@ -3,7 +3,7 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-// Rota de registro
+// Rota de registro //excluir após o cadastro do primeiro registro
 router.post('/register', authController.register);
 
 // Rota de login
