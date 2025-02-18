@@ -43,7 +43,7 @@ const Agendamento = sequelize.define('Agendamento', {
     },
 }, {
     tableName: 'agendamentos',
-    timestamps: true, // Habilita os campos `created_at` e `updated_at`
+    timestamps: false, // Habilita os campos `created_at` e `updated_at`
 });
 
 module.exports = Agendamento;

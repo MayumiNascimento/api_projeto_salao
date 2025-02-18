@@ -1,4 +1,5 @@
 require("dotenv").config({ path: "../.env" });
+require('./agendar'); // Inicia o automatizador de lembretes
 
 const express = require('express');
 const cors = require("cors");
