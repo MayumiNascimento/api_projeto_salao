@@ -65,32 +65,6 @@ const login = async (req, res) => {
         console.error("Erro no login:", error); // Exibe o erro no terminal
         return res.status(500).json({ message: "Erro no servidor", error });
       }
-
-    // primeira versão, se der errado volta pra essa
-    // try {
-    //     // Busca o funcionário no banco de dados
-    //     const funcionario = await Funcionario.findOne({ where: { email } });
-    //     if (!funcionario) {
-    //         return res.status(400).json({ message: 'Funcionário não encontrado' });
-    //     }
-
-    //     // Verifica a senha
-    //     const isSenhaValid = await bcrypt.compare(senha, funcionario.senha);
-    //     if (!isSenhaValid) {
-    //         return res.status(400).json({ message: 'Senha incorreta' });
-    //     }
-
-    //     // Gera o token JWT
-    //     const token = authUtils.generateToken({
-    //         id: funcionario.id,
-    //         email: funcionario.email,
-    //         tipo: funcionario.tipo,
-    //     });
-
-    //     res.json({ token });
-    // } catch (error) {
-    //     res.status(500).json({ message: 'Erro ao fazer login', error });
-    // }
 };
 
 module.exports = { login, register };

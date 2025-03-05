@@ -7,9 +7,16 @@ const criarFuncionario = async (req, res) => {
 
     try {
         // Verifica se o funcionário já existe
+
+        //verificando email
         const funcionarioExistente = await Funcionario.findOne({ where: { email } });
         if (funcionarioExistente) {
             return res.status(400).json({ message: 'Funcionário já existe' });
+        }
+        //verificando nome
+        const nomeExistente = await Funcionario.findOne({ where: { nome } });
+        if (nomeExistente) {
+            return res.status(400).json({ message: 'Já existe um funcionário com esse nome' });
         }
 
         // Hash da senha

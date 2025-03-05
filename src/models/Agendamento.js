@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Funcionario = require('../models/Funcionario');
+const Servico = require('../models/Servico');
 
 const Agendamento = sequelize.define('Agendamento', {
     id: {
@@ -45,5 +47,11 @@ const Agendamento = sequelize.define('Agendamento', {
     tableName: 'agendamentos',
     timestamps: false, // Habilita os campos `created_at` e `updated_at`
 });
+
+// Associação com o modelo Servico
+Agendamento.belongsTo(Servico, { foreignKey: 'servico_id', as: 'Servico' });
+
+// Associação com o modelo Funcionario
+Agendamento.belongsTo(Funcionario, { foreignKey: 'funcionario_id', as: 'Funcionario' });
 
 module.exports = Agendamento;
