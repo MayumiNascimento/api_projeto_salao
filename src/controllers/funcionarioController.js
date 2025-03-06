@@ -19,8 +19,6 @@ const criarFuncionario = async (req, res) => {
             return res.status(400).json({ message: 'Já existe um funcionário com esse nome' });
         }
 
-        // Hash da senha
-        const hashedSenha = await bcrypt.hash(senha, 10);
 
         // Cria o funcionário
         const novoFuncionario = await Funcionario.create({

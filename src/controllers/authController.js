@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Funcionario = require('../models/Funcionario');
 
@@ -13,14 +13,11 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'Funcionário já existe' });
         }
 
-        // Hash da senha
-        const hashedSenha = await bcrypt.hash(senha, 10);
-
         // Cria o funcionário no banco de dados
         await Funcionario.create({
             nome,
             email,
-            senha: hashedSenha,
+            senha,
             especialidade,
             tipo,
             comissao,
