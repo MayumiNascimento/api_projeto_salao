@@ -56,7 +56,14 @@ const login = async (req, res) => {
         return res.json({
           message: "Login realizado com sucesso!",
           token,
-          tipo: funcionario.tipo, // Pode ser "admin" ou "funcionario"
+          funcionario: {
+            id: funcionario.id,
+            nome: funcionario.nome,
+            email: funcionario.email,
+            especialidade: funcionario.especialidade,
+            comissao: funcionario.comissao,
+            tipo: funcionario.tipo, // Pode ser "admin" ou "funcionario"
+          }
         });
       } catch (error) {
         console.error("Erro no login:", error); // Exibe o erro no terminal

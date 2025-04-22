@@ -4,6 +4,11 @@ const Servico = require('../models/Servico');
 const criarServico = async (req, res) => {
     const { nome, categoria, preco } = req.body;
 
+    const nomeExistente = await Servico.findOne({ where: { nome } });
+        if (nomeExistente) {
+            return res.status(400).json({ message: 'Já existe um serviço com esse nome' });
+        }
+
     try {
         const novoServico = await Servico.create({
             nome,

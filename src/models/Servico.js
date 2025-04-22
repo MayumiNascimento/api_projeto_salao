@@ -20,7 +20,16 @@ const Servico = sequelize.define('Servico', {
     },
 }, {
     tableName: 'servicos',
-    timestamps: false, // Desativa os campos `createdAt` e `updatedAt`
+    timestamps: false, 
 });
+
+Servico.associate = (models) => {
+    Servico.belongsToMany(models.Agendamento, {
+        through: models.Agendamentos_itens,
+        foreignKey: 'servico_id',
+        otherKey: 'agendamento_id',
+        as: 'Agendamentos'
+    });
+};
 
 module.exports = Servico;

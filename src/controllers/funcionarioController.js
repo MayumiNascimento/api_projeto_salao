@@ -24,7 +24,7 @@ const criarFuncionario = async (req, res) => {
         const novoFuncionario = await Funcionario.create({
             nome,
             email,
-            senha: hashedSenha,
+            senha,
             especialidade,
             tipo,
             comissao,
@@ -32,7 +32,8 @@ const criarFuncionario = async (req, res) => {
 
         res.status(201).json({ message: 'Funcionário criado com sucesso', funcionario: novoFuncionario });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao criar funcionário', error });
+        console.error('Erro ao criar funcionário:', error); // Log do erro para depuração
+        res.status(500).json({ message: 'Erro ao criar funcionário', error: error.message });
     }
 };
 
@@ -103,10 +104,99 @@ const excluirFuncionario = async (req, res) => {
     }
 };
 
+ const trocarSenha = async(req, res) => {
+    const { id, senhaAtual, novaSenha } = req.body;
+
+  try {
+    // Busca o funcionário pelo ID
+    const funcionario = await Funcionario.findByPk(id);
+
+    if (!funcionario) {
+      return res.status(404).json({ message: 'Funcionário não encontrado.' });
+    }
+
+    // Verifica se a senha atual está correta
+    const isMatch = await funcionario.comparePassword(senhaAtual);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Senha atual incorreta.' });
+    }
+
+    // Atualiza a senha
+    funcionario.senha = novaSenha;
+    await funcionario.save(); // O hook beforeUpdate fará o hash da nova senha
+
+    res.status(200).json({ message: 'Senha alterada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao trocar senha:', error);
+    res.status(500).json({ message: 'Erro ao trocar senha.' });
+  }
+ }
+
+//login funcionario
+
+const verAgenda = async(req, res) => {
+    try {
+      const funcionario_id = req.user.id; // ID do funcionário autenticado
+
+      const agendamentos = await db.Agendamento.findAll({
+        where: { funcionario_id },
+        order: [["data", "ASC"]], // agendamentos mais próximos
+      });
+
+      res.json({
+        sucesso: true,
+        dados: agendamentos,
+      });
+    } catch (erro) {
+      res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar agenda", erro });
+    }
+  }
+
+const verComissoes = async (req, res) => {
+    try {
+      const funcionario_id = req.user.id;
+      let { periodo } = req.query; // Query param para filtrar por período
+
+      const funcionario = await db.Funcionario.findByPk(funcionario_id);
+        if (!funcionario) {
+            return res.status(404).json({ sucesso: false, mensagem: "Funcionário não encontrado" });
+        }
+
+      let whereCondition = { funcionario_id };
+      let dataAtual = new Date();
+
+      if (periodo === "dia") {
+        whereCondition.data = dataAtual.toISOString().split("T")[0]; // Filtra pelo dia atual
+      } else if (periodo === "semana") {
+        let dataInicioSemana = new Date();
+        dataInicioSemana.setDate(dataAtual.getDate() - 7); // Últimos 7 dias
+        whereCondition.data = { [db.Sequelize.Op.between]: [dataInicioSemana, dataAtual] };
+      }
+
+      const comissoes = await db.Agendamento.findAll({
+        where: whereCondition,
+        attributes: ["id", "valor", "data"],
+      });
+
+      const totalComissao = comissoes.reduce((acc, agendamento) => acc + agendamento.total * funcionario.comissao, 0);
+
+      res.json({
+        sucesso: true,
+        totalComissao,
+        comissoes,
+      });
+    } catch (erro) {
+      res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar comissões", erro });
+    }
+  }
+
 module.exports = {
     criarFuncionario,
     listarFuncionarios,
     listarFuncionarioID,
     atualizarFuncionario,
     excluirFuncionario,
+    trocarSenha,
+    verAgenda,
+    verComissoes
 };

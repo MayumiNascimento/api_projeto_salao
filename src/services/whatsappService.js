@@ -6,8 +6,8 @@ let client;
 const iniciarWhatsApp = async () => {
     try {
         client = await venom.create({
-            session: 'agendamento-session', // Nome da sessão
-            multidevice: false, // Use true se for multi-dispositivo
+            session: 'agendamento-session',
+            multidevice: false, //não será multi-dispositivo
         });
         console.log('WhatsApp conectado com sucesso!');
     } catch (error) {
@@ -30,7 +30,7 @@ const enviarLembreteWhatsApp = async (telefone, mensagem) => {
     }
 };
 
-// Iniciar a conexão ao iniciar o serviço
+// Inicia a conexão ao iniciar o serviço
 iniciarWhatsApp();
 
 module.exports = { enviarLembreteWhatsApp };

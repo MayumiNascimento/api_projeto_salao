@@ -14,7 +14,6 @@ const enviarLembretes = async () => {
     const horarioNoite = new Date(agora);
     horarioNoite.setHours(20, 0, 0, 0); // 20h da noite
 
-
     // Verifica a hora de enviar os lembretes
     if (agora.getHours() === 8 && agora.getMinutes() === 0) {
         // Envia lembretes para agendamentos a partir das 12h
@@ -53,7 +52,5 @@ const enviarLembretes = async () => {
         });
     }
 };
-
 // Agenda a execução da função 
-//cron.schedule('0 8,20 * * *', enviarLembretes); // Envia lembretes às 8h da manhã e às 20h da noite
-cron.schedule('* * * * *', enviarLembretes); // Executa a cada minuto (para testes)
+cron.schedule('0 8,20 * * *', enviarLembretes); // Envia lembretes às 8h da manhã e às 20h da noite

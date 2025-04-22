@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const Funcionario = require('../models/Funcionario');
-const Servico = require('../models/Servico');
+
 
 const Agendamento = sequelize.define('Agendamento', {
     id: {
@@ -15,10 +15,6 @@ const Agendamento = sequelize.define('Agendamento', {
     },
     cliente_telefone: {
         type: DataTypes.STRING(15),
-        allowNull: false,
-    },
-    servico_id: {
-        type: DataTypes.INTEGER,
         allowNull: false,
     },
     funcionario_id: {
@@ -41,16 +37,25 @@ const Agendamento = sequelize.define('Agendamento', {
         type: DataTypes.TEXT,
     },
     desconto: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10,2),
     },
+    total: {
+        type: DataTypes.DECIMAL(10,2),
+        allowNull: false,
+    }
 }, {
     tableName: 'agendamentos',
-    timestamps: false, // Habilita os campos `created_at` e `updated_at`
+    timestamps: true, 
 });
-
-// Associação com o modelo Servico
-Agendamento.belongsTo(Servico, { foreignKey: 'servico_id', as: 'Servico' });
-
+//Associação com o modelo Servico
+Agendamento.associate = (models) => {
+    Agendamento.belongsToMany(models.Servico, {
+        through: models.Agendamentos_itens,
+        foreignKey: 'agendamento_id',
+        otherKey: 'servico_id',
+        as: 'Servicos'
+    });
+}
 // Associação com o modelo Funcionario
 Agendamento.belongsTo(Funcionario, { foreignKey: 'funcionario_id', as: 'Funcionario' });
 

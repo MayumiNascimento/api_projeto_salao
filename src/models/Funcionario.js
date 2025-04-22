@@ -40,13 +40,14 @@ const Funcionario = sequelize.define('Funcionario', {
     tableName: 'funcionarios',
     timestamps: false, 
     hooks: { 
-        //função para criptografar novamente a senha pós alteração
+        //função para criptografar a senha
         beforeCreate: async (funcionario) => {
             if (funcionario.senha) {
                 const salt = await bcrypt.genSalt(10); // Gera um salt
                 funcionario.senha = await bcrypt.hash(funcionario.senha, salt); // Faz o hash da senha
             }
         },
+        //função para criptografar novamente a senha pós alteração
         beforeUpdate: async (funcionario) => {
             if (funcionario.changed('senha')) { // Verifica se a senha foi alterada
                 const salt = await bcrypt.genSalt(10);
@@ -55,10 +56,13 @@ const Funcionario = sequelize.define('Funcionario', {
         },
     },
 });
-
     // Método para comparar senhas
     Funcionario.prototype.comparePassword = async function (senha) {
         return await bcrypt.compare(senha, this.senha);
+    };
+
+    Funcionario.associate = (models) => {
+        Funcionario.hasMany(models.Agendamento, { foreignKey: 'funcionario_id', as: 'Agendamentos' });
     };
 
 
