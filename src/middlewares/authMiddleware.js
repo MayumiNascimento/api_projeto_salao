@@ -9,7 +9,7 @@ exports.verificarToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.usuario = decoded; // Adiciona os dados do usuário ao request
+    req.user = decoded; // Adiciona os dados do usuário ao request
     next();
   } catch (error) {
     return res.status(401).json({ message: "Token inválido." });
@@ -17,14 +17,14 @@ exports.verificarToken = (req, res, next) => {
 };
 
 exports.permitirApenasAdmin = (req, res, next) => {
-  if (req.usuario.tipo !== "admin") {
+  if (req.user.tipo !== "admin") {
     return res.status(403).json({ message: "Acesso negado. Apenas administradores podem acessar esta rota." });
   }
   next();
 };
 
 exports.permitirApenasFuncionario = (req, res, next) => {
-  if (req.usuario.tipo !== "funcionario") {
+  if (req.user.tipo !== "funcionario") {
     return res.status(403).json({ message: "Acesso negado. Apenas funcionários podem acessar esta rota." });
   }
   next();

@@ -4,5 +4,6 @@ const { verificarToken, permitirApenasAdmin } = require("../middlewares/authMidd
 const AdminController = require("../controllers/adminController");
 
 router.get("/dashboard", verificarToken, permitirApenasAdmin, AdminController.obterDashboard);
+router.get("/dashboard/desempenho-mensal", verificarToken, permitirApenasAdmin, AdminController.obterDesempenhoMensal);
 
 module.exports = router;

@@ -3,6 +3,10 @@ require('./agendar'); // Inicia o automatizador de lembretes
 
 const express = require('express');
 const cors = require("cors");
+const http = require("http");
+const socketIo = require('socket.io');
+
+const { iniciarWhatsApp, setSocketInstance } = require('./services/whatsappService');
 
 const { Agendamento, Servico, Funcionario } = require('./models');
 
@@ -11,29 +15,39 @@ const funcionarioRoutes = require('./routes/funcionarioRoutes');
 const servicoRoutes = require('./routes/servicoRoutes');
 const agendamentoRoutes = require('./routes/agendamentoRoutes');
 const relatorioRoutes = require("./routes/relatorioRoutes");
-const adminDashboard = require("./routes/LoginAdminRoute")
+const adminDashboard = require("./routes/LoginAdminRoute");
 
 const app = express();
+const server = http.createServer(app); // Cria servidor HTTP com Express
+const io = socketIo(server, {
+    cors: {
+      origin: "http://localhost:3001", 
+      methods: ["GET", "POST"],
+      credentials: true
+    }
+  });
+
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
-
-// Rotas de autenticação
+// Rotas
 app.use('/auth', authRoutes);
-// Rotas de funcionários
 app.use('/api', funcionarioRoutes);
-// Rotas de serviços
 app.use('/api', servicoRoutes);
-// Rotas de agendamentos
 app.use('/api', agendamentoRoutes);
-//rota de relatorio
 app.use("/api", relatorioRoutes);
+app.use("/api", adminDashboard);
 
-//dashboard Admin
-app.use("/api", adminDashboard)
+// WebSocket
+setSocketInstance(io);
+io.on('connection', (socket) => {
+  console.log('Frontend conectado ao socket!');
+});
 
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+// Inicia o WhatsApp após subir o servidor
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+  console.log(`Servidor unificado rodando na porta ${PORT}`);
+  iniciarWhatsApp();
 });

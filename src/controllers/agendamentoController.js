@@ -3,7 +3,7 @@ const Servico = require('../models/Servico');
 const Funcionario = require('../models/Funcionario');
 
 const criarAgendamento = async (req, res) => {
-    const { cliente_nome, cliente_telefone, funcionario_id, dia, hora, status, observacoes, desconto, servicos } = req.body;
+    const { cliente_nome, cliente_telefone, funcionario_id, dia, hora, status, observacoes, desconto = 0, Servicos } = req.body;
 
     try {
         // Verifica se já existe um agendamento para o mesmo funcionário, dia e hora
@@ -14,20 +14,26 @@ const criarAgendamento = async (req, res) => {
             return res.status(400).json({ message: 'Já existe um agendamento para este funcionário neste horário.' });
         }
 
-        const novoAgendamento = await Agendamento.create({
-            cliente_nome,
-            cliente_telefone,
-            funcionario_id,
-            dia,
-            hora,
-            status,
-            observacoes,
-            desconto,
-        });
-        // Associa os serviços ao agendamento
-        if (servicos && servicos.length > 0) {
-            await novoAgendamento.setServicos(servicos);
+        // Verifica se serviços foram enviados
+        if (!Servicos) {
+            return res.status(400).json({ message: 'É necessário informar ao menos um serviço.' });
         }
+        const servicoIds = Servicos.map(s => s.id);
+        // Busca os serviços e soma os preços
+        const servicosSelecionados = await Servico.findAll({
+            where: { id: servicoIds }
+        });
+
+        const totalServicos = servicosSelecionados.reduce((sum, s) => sum + parseFloat(s.preco), 0);
+        const valorDesconto = parseFloat(desconto) || 0;
+        const totalCalculado = totalServicos - valorDesconto;
+
+        const novoAgendamento = await Agendamento.create({ 
+         cliente_nome, cliente_telefone, funcionario_id, dia, hora,  status,  observacoes,  desconto: valorDesconto, total: totalCalculado
+        });
+
+        await novoAgendamento.setServicos(servicoIds);
+
         res.status(201).json({ message: 'Agendamento criado com sucesso', agendamento: novoAgendamento });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar agendamento', error });
@@ -99,7 +105,7 @@ const listarAgendamentoID = async (req, res) => {
 // Atualizar um agendamento
 const atualizarAgendamento = async (req, res) => {
     const { id } = req.params;
-    const { cliente_nome, cliente_telefone, funcionario_id, dia, hora, status, observacoes, desconto, servicos } = req.body;
+    const { cliente_nome, cliente_telefone, funcionario_id, dia, hora, status, observacoes, desconto, Servicos } = req.body;
 
     try {
         const agendamento = await Agendamento.findByPk(id);
@@ -118,8 +124,9 @@ const atualizarAgendamento = async (req, res) => {
         agendamento.desconto = desconto || agendamento.desconto;
 
         // Atualiza os serviços associados ao agendamento
-        if (servicos) {
-            await agendamento.setServicos(servicos);
+        if (Servicos) {
+            const servicoIds = Servicos.map(s => s.id);
+            await agendamento.setServicos(servicoIds);
         }
 
         await agendamento.save();

@@ -1,4 +1,6 @@
 const Funcionario = require('../models/Funcionario');
+const Servico = require('../models/Servico');
+const db = require('../models');
 const bcrypt = require('bcryptjs');
 
 // Criar um novo funcionário
@@ -139,8 +141,11 @@ const verAgenda = async(req, res) => {
       const funcionario_id = req.user.id; // ID do funcionário autenticado
 
       const agendamentos = await db.Agendamento.findAll({
+        include: [
+            { model: Servico, as: 'Servicos', through: { attributes: [] }, },
+        ],
         where: { funcionario_id },
-        order: [["data", "ASC"]], // agendamentos mais próximos
+        order: [["dia", "ASC"], ["hora", "ASC"]],
       });
 
       res.json({
@@ -148,6 +153,7 @@ const verAgenda = async(req, res) => {
         dados: agendamentos,
       });
     } catch (erro) {
+      console.error("Erro ao carregar agenda:", erro); 
       res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar agenda", erro });
     }
   }
