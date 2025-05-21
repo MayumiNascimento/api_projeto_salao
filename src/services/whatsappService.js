@@ -2,16 +2,21 @@ const venom = require('venom-bot');
 let client;
 let ioInstance = null;
 
+const isWhatsAppConnected = () => {
+  return !!client && client.isConnected();
+};
+
 const iniciarWhatsApp = async () => {
   try {
+    console.log('Iniciando venom...');
     client = await venom.create({
-      session: 'agendamento-session',
-      multidevice: false,
+      session: 'novo-agendamento-session',
+      multidevice: true,
       catchQR: (base64Qr, asciiQR, attempts, urlCode) => {
+         console.log('🟡 QR Code gerado');
         if (ioInstance) {
           ioInstance.emit('qrCode', base64Qr);
-          ioInstance.emit('whatsappStatus', 'AGUARDANDO_QR');
-          console.log('QR Code enviado para o frontend!');
+          ioInstance.emit('whatsappStatus', 'AGUARDANDO_QR'); 
         }
       },
       logQR: false,
@@ -19,34 +24,54 @@ const iniciarWhatsApp = async () => {
       updatesLog: false,
     });
 
-    console.log('WhatsApp iniciado, aguardando conexão...');
+    if (!client) {
+      console.error('Client não foi criado corretamente!');
+      return;
+    }
 
-    // Escuta mudanças no estado da conexão
+    // Detecta mudanças de estado e envia o status atual
     client.onStateChange((state) => {
-      console.log('Estado atual do WhatsApp:', state);
+      console.log('📶 Estado atual do WhatsApp:', state);
+      if (!ioInstance) return;
 
-      if (ioInstance) {
-        if (state === 'CONNECTED') {
+      switch (state) {
+        case 'CONNECTED':
+        case 'open':
           ioInstance.emit('whatsappStatus', 'CONNECTED');
-        } else if (state === 'DISCONNECTED') {
+          break;
+        case 'DISCONNECTED':
+        case 'TIMEOUT':
+        case 'UNPAIRED':
+        case 'UNPAIRED_IDLE':
+        case 'CONFLICT':
           ioInstance.emit('whatsappStatus', 'DISCONNECTED');
-        } else if (state === 'TIMEOUT') {
-          ioInstance.emit('whatsappStatus', 'TIMEOUT');
-          // opcional: reconectar
-          console.warn('WhatsApp desconectado por TIMEOUT. Tentando reconectar...');
-          iniciarWhatsApp();
-        } else {
-          ioInstance.emit('whatsappStatus', state); // para lidar com outros estados
-        }
+          break;
+        default:
+          ioInstance.emit('whatsappStatus', state);
       }
     });
 
+    // Checagem periódica de conexão
+    setInterval(async () => {
+      try {
+        const conectado  = await client.isConnected();
+        console.log('🔄 Verificação ativa - isConnected:', conectado);
+
+        if (ioInstance) {
+          ioInstance.emit('whatsappStatus', conectado ? 'CONNECTED' : 'DISCONNECTED');
+        }
+      } catch (err) {
+        console.error('Erro ao verificar estado do WhatsApp:', err);
+        ioInstance.emit('whatsappStatus', 'DISCONNECTED');
+      }
+    }, 3600000); // 1 hora
   } catch (error) {
     console.error('Erro ao conectar ao WhatsApp:', error);
     if (ioInstance) {
       ioInstance.emit('whatsappStatus', 'ERRO_CONEXAO');
     }
   }
+
 };
 
 // Função de envio
@@ -69,4 +94,4 @@ const setSocketInstance = (io) => {
   ioInstance = io;
 };
 
-module.exports = { iniciarWhatsApp, enviarLembreteWhatsApp, setSocketInstance };
+module.exports = { iniciarWhatsApp, enviarLembreteWhatsApp, setSocketInstance, isWhatsAppConnected };

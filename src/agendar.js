@@ -14,13 +14,12 @@ const lembretesTarde = async () => {
             hora: { [Op.gte]: '12:00' },
             status: 'agendado',
         },
-        include: [{ model: Servico, attributes: ['nome'] }],
+        include: [{ model: Servico, as: 'Servicos', attributes: ['nome'] }],
     });
 
     agendamentos.forEach((agendamento) => {
         const nomesServicos = agendamento.Servicos.map(s => s.nome).join(', ');
-        const msg = `Olá ${agendamento.cliente_nome}, você tem um agendamento para ${nomesServicos} 
-                        às ${agendamento.hora}. \nEsperamos você!`;
+        const msg = `Olá ${agendamento.cliente_nome}, você tem um agendamento para ${nomesServicos} às ${agendamento.hora}. \nEsperamos você!`;
         enviarLembreteWhatsApp(agendamento.cliente_telefone, msg);
     });
 };
@@ -37,13 +36,12 @@ const lembretesManha = async () => {
             hora: { [Op.lt]: '12:00' },
             status: 'agendado',
         },
-        include: [{ model: Servico, attributes: ['nome'] }],
+        include: [{ model: Servico,as: 'Servicos', attributes: ['nome'] }],
     });
 
     agendamentos.forEach((agendamento) => {
         const nomesServicos = agendamento.Servicos.map(s => s.nome).join(', ');
-        const msg = `Olá ${agendamento.cliente_nome}, você tem um agendamento para ${nomesServicos} 
-                    às ${agendamento.hora} amanhã. \nEsperamos você!`;
+        const msg = `Olá ${agendamento.cliente_nome}, você tem um agendamento para ${nomesServicos} às ${agendamento.hora} amanhã. \nEsperamos você!`;
         enviarLembreteWhatsApp(agendamento.cliente_telefone, msg);
     });
 };

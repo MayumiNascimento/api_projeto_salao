@@ -6,7 +6,7 @@ const cors = require("cors");
 const http = require("http");
 const socketIo = require('socket.io');
 
-const { iniciarWhatsApp, setSocketInstance } = require('./services/whatsappService');
+const { iniciarWhatsApp, setSocketInstance, isWhatsAppConnected  } = require('./services/whatsappService');
 
 const { Agendamento, Servico, Funcionario } = require('./models');
 
@@ -40,14 +40,29 @@ app.use("/api", relatorioRoutes);
 app.use("/api", adminDashboard);
 
 // WebSocket
-setSocketInstance(io);
 io.on('connection', (socket) => {
-  console.log('Frontend conectado ao socket!');
+  console.log(`Socket conectado: ${socket.id}`);
+
+  socket.on('disconnect', (reason) => {
+    console.log(`Socket desconectado (${socket.id}): ${reason}`);
+  });
+
+  socket.on('reconnect_attempt', () => {
+    console.log(`Tentando reconectar socket: ${socket.id}`);
+  });
 });
 
+setSocketInstance(io);
+
+let whatsappInicializado = false;
 // Inicia o WhatsApp após subir o servidor
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Servidor unificado rodando na porta ${PORT}`);
-  iniciarWhatsApp();
+
+  if (!isWhatsAppConnected()) {
+      await iniciarWhatsApp();
+  } else {
+      console.log('WhatsApp já está conectado.');
+    }
 });
