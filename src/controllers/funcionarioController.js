@@ -1,7 +1,7 @@
 const Funcionario = require('../models/Funcionario');
 const Servico = require('../models/Servico');
 const db = require('../models');
-const bcrypt = require('bcryptjs');
+const { Op } = require("sequelize");
 
 // Criar um novo funcionário
 const criarFuncionario = async (req, res) => {
@@ -170,29 +170,45 @@ const verComissoes = async (req, res) => {
 
       let whereCondition = { funcionario_id };
       let dataAtual = new Date();
+      dataAtual.setHours(23, 59, 59, 999);
 
       if (periodo === "dia") {
-        whereCondition.data = dataAtual.toISOString().split("T")[0]; // Filtra pelo dia atual
+        const inicioDoDia = new Date();
+        inicioDoDia.setHours(0, 0, 0, 0);
+        whereCondition.dia = { [Op.between]: [inicioDoDia, dataAtual] };
+
       } else if (periodo === "semana") {
-        let dataInicioSemana = new Date();
-        dataInicioSemana.setDate(dataAtual.getDate() - 7); // Últimos 7 dias
-        whereCondition.data = { [db.Sequelize.Op.between]: [dataInicioSemana, dataAtual] };
+        const inicioSemana = new Date();
+        inicioSemana.setDate(dataAtual.getDate() - 7);
+        inicioSemana.setHours(0, 0, 0, 0);
+        whereCondition.dia = { [Op.between]: [inicioSemana, dataAtual] };
       }
 
       const comissoes = await db.Agendamento.findAll({
         where: whereCondition,
-        attributes: ["id", "valor", "data"],
+        attributes: ["id", "total", "dia"],
       });
 
-      const totalComissao = comissoes.reduce((acc, agendamento) => acc + agendamento.total * funcionario.comissao, 0);
+      const totalComissao = comissoes.reduce((acc, agendamento) => {
+        return  acc + (parseFloat(agendamento.total) * (funcionario.comissao / 100))
+      }, 0)
 
+          const comissoesComValor = comissoes.map(agendamento => ({
+            id: agendamento.id,
+            total: agendamento.total,
+            dia: agendamento.dia,
+            comissao: parseFloat(agendamento.total) * (funcionario.comissao / 100)
+          }));
+       
       res.json({
         sucesso: true,
         totalComissao,
-        comissoes,
+        comissoes: comissoesComValor,
       });
     } catch (erro) {
-      res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar comissões", erro });
+      console.error("Erro ao carregar comissões:", erro);
+      res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar comissões", erro: erro.message });
+
     }
   }
 
