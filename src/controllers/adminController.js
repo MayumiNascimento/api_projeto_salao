@@ -17,7 +17,11 @@ const AdminController = {
       // dados para o dashboard
       const totalAgendamentos = await db.Agendamento.count();
       const totalFuncionarios = await db.Funcionario.count();
-      const receitaTotal = await db.Agendamento.sum("total");
+      const receitaTotal = await db.Agendamento.sum("total", {
+        where: {
+          status: 'concluído',
+        }
+      });
 
        // Agendamentos do dia
        const agendamentosDoDia = await db.Agendamento.count({
@@ -31,10 +35,11 @@ const AdminController = {
       // Receita do mês 
       const receitaDoMes = await db.Agendamento.sum("total", {
         where: {
+          status: 'concluído',
+        },
           dia: {
             [Op.between]: [inicioMes, new Date()],
           },
-        },
       });
 
       res.json({

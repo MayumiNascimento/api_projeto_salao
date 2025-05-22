@@ -1,5 +1,6 @@
 const Funcionario = require('../models/Funcionario');
 const Servico = require('../models/Servico');
+const Agendamento = require('../models/Agendamento');
 const db = require('../models');
 const { Op } = require("sequelize");
 
@@ -91,19 +92,43 @@ const atualizarFuncionario = async (req, res) => {
 
 // Excluir um funcionário
 const excluirFuncionario = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const funcionario = await Funcionario.findByPk(id);
-        if (!funcionario) {
-            return res.status(404).json({ message: 'Funcionário não encontrado' });
-        }
+  try {
+    const funcionario = await Funcionario.findByPk(id);
 
-        await funcionario.destroy();
-        res.status(200).json({ message: 'Funcionário excluído com sucesso' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao excluir funcionário', error });
+    if (!funcionario) {
+      return res.status(404).json({ message: 'Funcionário não encontrado' });
     }
+
+    // Verifica se há agendamentos vinculados ao funcionário
+    const agendamentosVinculados = await Agendamento.count({
+      where: { funcionario_id: id },
+    });
+
+    if (agendamentosVinculados === 0) {
+      // Exclui definitivamente do banco
+      await funcionario.destroy();
+      return res.status(200).json({ message: 'Funcionário excluído permanentemente' });
+    } else {
+
+      // anonimização dos dados
+      await Funcionario.update(
+        {
+          nome: `Funcionário Desativado`,
+          email: '-',
+          senha: '-',
+          especialidade: '-',
+          updatedAt: new Date(), 
+        },
+        { where: { id } }
+      );
+
+      return res.status(200).json({ message: 'Funcionário desativado permanentemente' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao excluir funcionário', error: error.message || error.toString() });
+  }
 };
 
  const trocarSenha = async(req, res) => {
