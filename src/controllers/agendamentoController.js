@@ -26,10 +26,9 @@ const criarAgendamento = async (req, res) => {
 
         const totalServicos = servicosSelecionados.reduce((sum, s) => sum + parseFloat(s.preco), 0);
         const valorDesconto = parseFloat(desconto) || 0;
-        const totalCalculado = totalServicos - valorDesconto;
 
         const novoAgendamento = await Agendamento.create({ 
-         cliente_nome, cliente_telefone, funcionario_id, dia, hora,  status,  observacoes,  desconto: valorDesconto, total: totalCalculado
+         cliente_nome, cliente_telefone, funcionario_id, dia, hora,  status,  observacoes,  desconto: valorDesconto, total: totalServicos
         });
 
         await novoAgendamento.setServicos(servicoIds);
