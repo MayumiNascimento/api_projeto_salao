@@ -17,11 +17,14 @@ const AdminController = {
       // dados para o dashboard
       const totalAgendamentos = await db.Agendamento.count();
       const totalFuncionarios = await db.Funcionario.count();
-      const receitaTotal = await db.Agendamento.sum("total", {
-        where: {
-          status: 'concluído',
-        }
+      const agendamentosConcluidos = await db.Agendamento.findAll({
+        where: { status: 'concluído' },
+        attributes: ['total', 'desconto']
       });
+
+      const receitaTotal = agendamentosConcluidos.reduce((soma, agendamento) => {
+        return soma + (agendamento.total - agendamento.desconto);
+      }, 0);
 
        // Agendamentos do dia
        const agendamentosDoDia = await db.Agendamento.count({
@@ -32,16 +35,6 @@ const AdminController = {
         },
       });
 
-      // Receita do mês 
-      const receitaDoMes = await db.Agendamento.sum("total", {
-        where: {
-          status: 'concluído',
-        },
-          dia: {
-            [Op.between]: [inicioMes, new Date()],
-          },
-      });
-
       res.json({
         sucesso: true,
         dados: {
@@ -49,11 +42,10 @@ const AdminController = {
           totalFuncionarios,
           receitaTotal,
           agendamentosDoDia,
-          receitaDoMes,
         },
       });
     } catch (erro) {
-      res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar dashboard", erro });
+      res.status(500).json({ sucesso: false, mensagem: "Erro ao carregar dashboard", erro: erro.message || erro.toString() });
     }
   },
 
@@ -74,13 +66,19 @@ const AdminController = {
           },
         });
 
-        const receita = await db.Agendamento.sum("total", {
+        const agendamentosMes = await db.Agendamento.findAll({
           where: {
+            status: 'concluido',
             dia: {
               [Op.between]: [inicio, fim],
             },
           },
+          attributes: ['total', 'desconto']
         });
+
+        const receita = agendamentosMes.reduce((soma, agendamento) => {
+          return soma + (agendamento.total - agendamento.desconto);
+        }, 0);
 
         desempenho.push({
           mes: inicio.toLocaleString("pt-BR", { month: "short" }),
