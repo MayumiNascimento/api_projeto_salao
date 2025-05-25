@@ -1,0 +1,9 @@
+20services:
+  - type: web
+    name: api_projeto_salao
+    env: node
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20
