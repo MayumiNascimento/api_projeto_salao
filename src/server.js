@@ -54,7 +54,6 @@ io.on('connection', (socket) => {
 
 setSocketInstance(io);
 
-let whatsappInicializado = false;
 // Inicia o WhatsApp após subir o servidor
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, async () => {
