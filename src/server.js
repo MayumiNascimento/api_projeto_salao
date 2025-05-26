@@ -21,7 +21,7 @@ const app = express();
 const server = http.createServer(app); // Cria servidor HTTP com Express
 const io = socketIo(server, {
     cors: {
-      origin: "http://localhost:3001", 
+      origin: process.env.FRONTEND_URL, 
       methods: ["GET", "POST"],
       credentials: true
     }
