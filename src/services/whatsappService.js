@@ -31,7 +31,7 @@ const iniciarWhatsApp = async () => {
 
     // Detecta mudanças de estado e envia o status atual
     client.onStateChange((state) => {
-      console.log('📶 Estado atual do WhatsApp:', state);
+      console.log('Estado atual do WhatsApp:', state);
       if (!ioInstance) return;
 
       switch (state) {
@@ -55,13 +55,12 @@ const iniciarWhatsApp = async () => {
     setInterval(async () => {
       try {
         const conectado  = await client.isConnected();
-        console.log('🔄 Verificação ativa - isConnected:', conectado);
+        console.log('Verificação isConnected:', conectado);
 
         if (ioInstance) {
           ioInstance.emit('whatsappStatus', conectado ? 'CONNECTED' : 'DISCONNECTED');
         }
       } catch (err) {
-        console.error('Erro ao verificar estado do WhatsApp:', err);
         ioInstance.emit('whatsappStatus', 'DISCONNECTED');
       }
     }, 1800000); // 30 minutos
