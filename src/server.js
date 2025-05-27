@@ -24,7 +24,8 @@ const io = socketIo(server, {
       origin: process.env.FRONTEND_URL, 
       methods: ["GET", "POST"],
       credentials: true
-    }
+    },
+    transports: ["websocket"]
   });
 
 // Middlewares
