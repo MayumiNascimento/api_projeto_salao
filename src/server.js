@@ -1,3 +1,5 @@
+app.set('trust proxy', 1); //para o azure
+
 require("dotenv").config({ path: "../.env" });
 require('./agendar'); // Inicia o automatizador de lembretes
 
@@ -24,7 +26,8 @@ const io = socketIo(server, {
       origin: process.env.FRONTEND_URL, 
       methods: ["GET", "POST"],
       credentials: true
-    }
+    },
+    transports: ["websocket"]
   });
 
 // Middlewares
