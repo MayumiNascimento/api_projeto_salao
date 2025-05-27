@@ -61,4 +61,4 @@ jobs:
           app-name: 'apisalao'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8FA7CAABE0C042A085A11F25A9478C30 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C49103EED46D469FA78B07E3EDE40F0C }}
