@@ -1,21 +1,21 @@
-require("dotenv").config({ path: "../.env" });
-require('./agendar'); // Inicia o automatizador de lembretes
+require("dotenv").config();
+require('./src/agendar'); // Inicia o automatizador de lembretes
 
 const express = require('express');
 const cors = require("cors");
 const http = require("http");
 const socketIo = require('socket.io');
 
-const { iniciarWhatsApp, setSocketInstance, isWhatsAppConnected  } = require('./services/whatsappService');
+const { iniciarWhatsApp, setSocketInstance, isWhatsAppConnected  } = require('./src/services/whatsappService');
 
-const { Agendamento, Servico, Funcionario } = require('./models');
+const { Agendamento, Servico, Funcionario } = require('./src/models');
 
-const authRoutes = require('./routes/authRoutes');
-const funcionarioRoutes = require('./routes/funcionarioRoutes');
-const servicoRoutes = require('./routes/servicoRoutes');
-const agendamentoRoutes = require('./routes/agendamentoRoutes');
-const relatorioRoutes = require("./routes/relatorioRoutes");
-const adminDashboard = require("./routes/LoginAdminRoute");
+const authRoutes = require('./src/routes/authRoutes');
+const funcionarioRoutes = require('./src/routes/funcionarioRoutes');
+const servicoRoutes = require('./src/routes/servicoRoutes');
+const agendamentoRoutes = require('./src/routes/agendamentoRoutes');
+const relatorioRoutes = require("./src/routes/relatorioRoutes");
+const adminDashboard = require("./src/routes/LoginAdminRoute");
 
 const app = express();
 const server = http.createServer(app); // Cria servidor HTTP com Express
@@ -65,3 +65,4 @@ server.listen(PORT, async () => {
       console.log('WhatsApp já está conectado.');
     }
 });
+
