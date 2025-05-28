@@ -55,4 +55,4 @@ jobs:
           app-name: 'salaoapi'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F1B0AD0D55FC45578889EE20401F416D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_552938FB96FE407CB60DD0365CFC6386 }}
