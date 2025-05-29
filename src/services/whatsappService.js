@@ -12,6 +12,7 @@ const iniciarWhatsApp = async () => {
     client = await venom.create({
       session: 'novo-agendamento-session',
       multidevice: true,
+      sessionPath: '../tokens',
       catchQR: (base64Qr, asciiQR, attempts, urlCode) => {
          console.log('🟡 QR Code gerado');
         if (ioInstance) {
@@ -22,6 +23,17 @@ const iniciarWhatsApp = async () => {
       logQR: false,
       disableWelcome: true,
       updatesLog: false,
+      browserArgs: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu',
+        '--single-process',
+        '--disable-features=site-per-process'
+      ],
     });
 
     if (!client) {
