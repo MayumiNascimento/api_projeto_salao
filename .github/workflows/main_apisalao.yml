@@ -23,14 +23,14 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://rgsalao.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_a0280d8c4db7415cb4f33790e300eccd }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_09cf9f88fc604fe3b2de21a35fd0c0e9 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_808d74c2b1324e30955b8bf04ece9091 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_49aa8dc088f94113b4619fcc9e46b777 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: rgsalao.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_a0280d8c4db7415cb4f33790e300eccd }}/api-projeto-salao:${{ github.sha }}
+        tags: rgsalao.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_808d74c2b1324e30955b8bf04ece9091 }}/rgsalao/api-projeto-salao:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'apisalao'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_a120bb088060491399acf5ebf7b719cd }}
-        images: 'rgsalao.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_a0280d8c4db7415cb4f33790e300eccd }}/api-projeto-salao:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_0038221d693f4ecca96a8008e1a17f4d }}
+        images: 'rgsalao.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_808d74c2b1324e30955b8bf04ece9091 }}/rgsalao/api-projeto-salao:${{ github.sha }}'
