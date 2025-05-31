@@ -26,7 +26,7 @@ const io = socketIo(server, {
       credentials: true
     },
     pingInterval: 60000, // envia pings a cada 60s
-    pingTimeout: 25000   // espera 25s por resposta
+    pingTimeout: 60000   // espera 60s por resposta
   });
 
 // Middlewares
