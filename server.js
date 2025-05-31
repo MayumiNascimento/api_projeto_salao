@@ -24,7 +24,9 @@ const io = socketIo(server, {
       origin: process.env.FRONTEND_URL, 
       methods: ["GET", "POST"],
       credentials: true
-    }
+    },
+    pingInterval: 60000, // envia pings a cada 60s
+    pingTimeout: 25000   // espera 25s por resposta
   });
 
 // Middlewares
@@ -39,9 +41,22 @@ app.use('/api', agendamentoRoutes);
 app.use("/api", relatorioRoutes);
 app.use("/api", adminDashboard);
 
+const sendHeartbeat = (socket) => {
+  setTimeout(() => {
+    socket.emit("ping", { beat: 1 });
+    sendHeartbeat(socket); // loop infinito com delay
+  }, 10000); // envia ping a cada 10 segundos
+};
+
 // WebSocket
 io.on('connection', (socket) => {
   console.log(`Socket conectado: ${socket.id}`);
+  sendHeartbeat(socket);
+
+  // Resposta do cliente
+  socket.on("pong", (data) => {
+    console.log("Pong recebido do cliente:", data);
+  });
 
   socket.on('disconnect', (reason) => {
     console.log(`Socket desconectado (${socket.id}): ${reason}`);

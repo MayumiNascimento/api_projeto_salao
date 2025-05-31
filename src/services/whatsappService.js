@@ -12,6 +12,7 @@ const iniciarWhatsApp = async () => {
     client = await venom.create({
       session: 'novo-agendamento-session',
       multidevice: true,
+      browserPathExecutable: '/usr/bin/chromium',
       sessionPath: '../tokens',
       catchQR: (base64Qr, asciiQR, attempts, urlCode) => {
          console.log('🟡 QR Code gerado');
@@ -68,6 +69,11 @@ const iniciarWhatsApp = async () => {
       try {
         const conectado  = await client.isConnected();
         console.log('Verificação isConnected:', conectado);
+
+      if (!conectado) {
+        console.warn('WhatsApp desconectado. Tentando reconectar...');
+        await iniciarWhatsApp();
+      }
 
         if (ioInstance) {
           ioInstance.emit('whatsappStatus', conectado ? 'CONNECTED' : 'DISCONNECTED');

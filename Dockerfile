@@ -1,15 +1,17 @@
+# Imagem base enxuta com Node.js 22
 FROM node:22-slim
 
-# Define o diretório de trabalho dentro do container
+# Diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos de dependências primeiro
+# Copia apenas os arquivos de dependência primeiro
 COPY package*.json ./
 
-# Instala dependências da aplicação
+# Instala dependências do sistema
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
+    chromium \
     fonts-liberation \
     libappindicator3-1 \
     libasound2 \
@@ -35,15 +37,13 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
-
+# Instala as dependências do Node.js
 RUN npm install
 
-
+# Copia o restante da aplicação
 COPY . .
 
-# porta usada pelo servidor
 EXPOSE 3001
 
-# Comando para iniciar o servidor
+# Comando padrão de inicialização
 CMD ["node", "server.js"]
