@@ -12,8 +12,7 @@ const iniciarWhatsApp = async () => {
     client = await venom.create({
       session: 'novo-agendamento-session',
       multidevice: true,
-      browserPathExecutable: '/usr/bin/chromium',
-      sessionPath: '../tokens',
+      browserPathExecutable: process.env.CHROME_BIN || '/usr/bin/chromium',
       catchQR: (base64Qr, asciiQR, attempts, urlCode) => {
          console.log('🟡 QR Code gerado');
         if (ioInstance) {

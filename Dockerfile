@@ -43,7 +43,11 @@ RUN npm install
 # Copia o restante da aplicação
 COPY . .
 
-EXPOSE 3001
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV CHROME_BIN=/usr/bin/chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+EXPOSE 3000
 
 # Comando padrão de inicialização
 CMD ["node", "server.js"]

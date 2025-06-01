@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
 setSocketInstance(io);
 
 // Inicia o WhatsApp após subir o servidor
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
   console.log(`Servidor unificado rodando na porta ${PORT}`);
 
