@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config();
 const { Sequelize } = require('sequelize');
 
 // Configurações de conexão
@@ -23,6 +23,12 @@ const sequelize = new Sequelize(
 sequelize.authenticate()
     .then(() => {
         console.log('Conectado ao MySQL com Sequelize!');
+        console.log("Tentando conectar com:", {
+                host: process.env.DB_HOST,
+                port: process.env.DB_PORT,
+                user: process.env.DB_USER,
+                db: process.env.DB_NAME
+              });
     })
     .catch((err) => {
         console.error('Erro ao conectar ao MySQL:', err);

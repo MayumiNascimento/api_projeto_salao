@@ -84,7 +84,7 @@ const iniciarWhatsApp = async () => {
       } catch (err) {
         ioInstance.emit('whatsappStatus', 'DISCONNECTED');
       }
-    }, 1800000); // 30 minutos
+    }, 180000); // 3 minutos
   } catch (error) {
     console.error('Erro ao conectar ao WhatsApp:', error);
     if (ioInstance) {
