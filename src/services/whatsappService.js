@@ -11,8 +11,13 @@ const iniciarWhatsApp = async () => {
     console.log('Iniciando venom...');
     client = await venom.create({
       session: 'novo-agendamento-session',
+      storageOptions: {
+        folderName: './whatsapp-sessions', 
+        saveSessions: true
+        },
       multidevice: true,
-      browserPathExecutable: process.env.CHROME_BIN || '/usr/bin/chromium',
+      autoClose: 0, // Fecha a sessão após 60 segundos (0 para testes)
+      createTimeout: 300000, // (5 minutos)
       catchQR: (base64Qr, asciiQR, attempts, urlCode) => {
          console.log('🟡 QR Code gerado');
         if (ioInstance) {
@@ -28,11 +33,11 @@ const iniciarWhatsApp = async () => {
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
-        '--no-first-run',
-        '--no-zygote',
-        '--disable-gpu',
-        '--disable-features=site-per-process'
+        '--single-process', 
+        '--max-old-space-size=512',
+        '--disable-blink-features=AutomationControlled' 
       ],
+      executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium-browser'
     });
 
     if (!client) {
@@ -85,6 +90,7 @@ const iniciarWhatsApp = async () => {
     if (ioInstance) {
       ioInstance.emit('whatsappStatus', 'ERRO_CONEXAO');
     }
+    setTimeout(iniciarWhatsApp, 10000);
   }
 
 };
