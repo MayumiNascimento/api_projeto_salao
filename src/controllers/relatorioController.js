@@ -49,7 +49,7 @@ const gerarRelatorio = async (req, res) => {
             const totalAgendamento = totalServicos - desconto;
 
             return {
-                servicos: servicos.map(s => ({
+                Servicos: servicos.map(s => ({
                     nome: s.nome,
                     preco: s.preco,
                 })),
