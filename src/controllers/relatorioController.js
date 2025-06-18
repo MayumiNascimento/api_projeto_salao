@@ -43,13 +43,13 @@ const gerarRelatorio = async (req, res) => {
         let comissoesPorFuncionario = {};
 
         const processarAgendamento = (agendamento) => {
-            const servicos = agendamento.Servicos || [];
+            const Servicos = agendamento.Servicos || [];
             const totalServicos = servicos.reduce((sum, servico) => sum + parseFloat(servico.preco), 0);
             const desconto = parseFloat(agendamento.desconto) || 0;
             const totalAgendamento = totalServicos - desconto;
 
             return {
-                Servicos: servicos.map(s => ({
+                Servicos: Servicos.map(s => ({
                     nome: s.nome,
                     preco: s.preco,
                 })),
@@ -61,7 +61,7 @@ const gerarRelatorio = async (req, res) => {
         // Processando os agendamentos concluídos para os cálculos
         const listaAgendamentosConcluidos = agendamentosConcluidos.map(agendamento => {
 
-            const { servicos, totalServicos, totalAgendamento } = processarAgendamento(agendamento);
+            const { Servicos, totalServicos, totalAgendamento } = processarAgendamento(agendamento);
 
             totalBruto += totalServicos;
             totalLiquido += totalAgendamento;
@@ -88,14 +88,14 @@ const gerarRelatorio = async (req, res) => {
                 dia: agendamento.dia,
                 hora: agendamento.hora,
                 desconto: agendamento.desconto,
-                servicos,
+                Servicos,
                 total: totalAgendamento.toFixed(2)
             };
         });
 
         // Processando a listagem de cancelados (se houver)
         const listaAgendamentosCancelados = agendamentosCancelados.map(agendamento => {
-            const { servicos } = processarAgendamento(agendamento);
+            const { Servicos } = processarAgendamento(agendamento);
             
             return {
                 id: agendamento.id,
@@ -103,7 +103,7 @@ const gerarRelatorio = async (req, res) => {
                 funcionario_id: agendamento.Funcionario?.nome || "Não atribuído",
                 dia: agendamento.dia,
                 hora: agendamento.hora,
-                servicos
+                Servicos
             };
         });
 
