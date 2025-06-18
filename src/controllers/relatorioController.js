@@ -44,7 +44,7 @@ const gerarRelatorio = async (req, res) => {
 
         const processarAgendamento = (agendamento) => {
             const Servicos = agendamento.Servicos || [];
-            const totalServicos = servicos.reduce((sum, servico) => sum + parseFloat(servico.preco), 0);
+            const totalServicos = Servicos.reduce((sum, servico) => sum + parseFloat(servico.preco), 0);
             const desconto = parseFloat(agendamento.desconto) || 0;
             const totalAgendamento = totalServicos - desconto;
 
